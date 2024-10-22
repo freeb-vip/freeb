@@ -1,0 +1,4 @@
+chart/*.yaml
+chart/*.yml
+chart/freeb/charts
+chart/freeb/values-*
