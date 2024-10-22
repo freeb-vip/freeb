@@ -1,0 +1,12 @@
+apiVersion: v2
+name: freeb
+description: A Helm chart for freeb
+type: application
+version: 3.0.1
+appVersion: "1.0.0"
+keywords:
+  - k8s
+  - freeb
+maintainers:
+  - email: hongchunhua@freeb.vip
+    name: hongchunhua

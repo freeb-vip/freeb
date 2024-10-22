@@ -1,0 +1,108 @@
+# Default values for center.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## @section Global parameters
+global:
+  #全局镜像平台地址
+  imageRegistry: ""
+  imagePullSecrets: []
+  #全局存储类型
+  storageClass: ""
+
+image:
+    registry: "registry.freeb.vip"
+    repository: freeb/freeb
+    tag: latest
+    pullPolicy: IfNotPresent #IfNotPresent
+    pullSecrets: []
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: www.freeb.vip
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: www-freeb-vip-tls-secret
+      hosts:
+        - www.freeb.vip
+
+## 服务账户，默认default
+serviceAccount:
+  create: false
+  annotations: {}
+  name: "default"
+
+## mysq模式属于有状态服务，不适合多副本，除非本身架构就是分布式，如zookeeper等
+replicaCount: 2
+
+## 节点选择
+nodeSelector: {}
+podSecurityContext: {}
+
+## DNS配置
+dnsPolicy: "" # 默认为ClusterFirst
+dnsConfig:
+  # nameservers:
+  #    - 192.0.2.1 # this is an example
+  # searches:
+  #    - ns1.svc.cluster-domain.example
+  #    - my.dns.search.suffix
+  options:
+     - name: ndots  ## 默认k8s的ndots：5,由于 apline镜像无法识别短域名，需要配置为ndots:2
+       value: "2"
+
+## 资源限制
+resources:
+  limits:
+    cpu: 2500m
+    memory: 1024Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+tolerations: []
+affinity: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+
+## 状态探测
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+# 资源弹性管理
+autoscaling:
+  enabled: false
+  maxReplicas: 3
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 60 # 动态扩缩容CPU阈值
+  targetMemoryUtilizationPercentage: 80 # 动态扩缩容内存阈值
